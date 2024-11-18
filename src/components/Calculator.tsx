@@ -7,15 +7,27 @@ const Calculator: React.FC = () => {
 
   const handleButtonClick = (value: string) => {
     if (value === '=') {
-      try {
-        setDisplay(eval(display).toString());
-      } catch {
-        setDisplay('Erro');
-      }
+      setDisplay(safeEval(display));
     } else if (value === 'C') {
       setDisplay('');
     } else {
       setDisplay(display + value);
+    }
+  };
+
+  const safeEval = (expression: string): string => {
+    try {
+      // Use Function constructor instead of eval for safer evaluation
+      // Ensure that the expression contains only numbers and operators
+      if (/^[\d+\-*/.() ]+$/.test(expression)) {
+        // eslint-disable-next-line no-new-func
+        const result = new Function('return ' + expression)();
+        return result.toString();
+      } else {
+        throw new Error('Invalid expression');
+      }
+    } catch (error) {
+      return 'Erro';
     }
   };
 
